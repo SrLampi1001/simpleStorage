@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container-2">
-        <div>
+        <div class="container">
             <label for="name">Name:</label>
             <input type="text" name="name" id="name" placeholder="Ingrese su nombre" required>
             <label for="last_name">Last Name:</label>
@@ -31,27 +31,11 @@
         </table>
     </div>
     <script src="./script.js"></script>
-    <script src="./addUser.js"></script>
     <script>
-        document.getElementById('userForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
+        window.addEventListener("beforeunload", () => {
+    console.trace("RELOAD DETECTADO");
+    });
 
-            const name = document.getElementById('name').value.trim();
-            const lastName = document.getElementById('last_name').value.trim();
-            const alertSpan = document.querySelector('.alert');
-
-            if (name === '' || lastName === '') {
-                alertSpan.classList.remove('hidden');
-                return;
-            } else {
-                alertSpan.classList.add('hidden');
-            }
-            const newUserData = {
-                name: name,
-                last_name: lastName
-            };
-            addUser(newUserData);
-        });
     </script>
 </body>
 </html>

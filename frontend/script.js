@@ -1,3 +1,4 @@
+const url = "http://localhost:3000/users";
 let nameInput = document.getElementById("name");
 let lastNameInput = document.getElementById("last_name");
 let saveButton = document.getElementById("saveButton");
@@ -16,11 +17,17 @@ badJob.appendChild(document.createElement("button")).innerText = "Cerrar";
 badJob.querySelector("button").addEventListener("click", ()=> {
     document.body.removeChild(badJob);
 });
+
 function StoreIntable(id, name, last_name){
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${id}</td> <td>${name}</td> <td>${last_name}</td> <td><button>Eliminar</button></td>`;
-    tr.querySelector("button").addEventListener("click", ()=> {
+    tr.querySelector("button").addEventListener("click", async e=> {
         tr.remove();
+        try {
+            
+        } catch (error) {
+            console.error(`Error: ${error}`)
+        }
     });
     return tr;
 }
@@ -32,11 +39,50 @@ saveButton.addEventListener("click", ()=> {
         lastNameInput.classList.add("nice"); lastNameInput.classList.remove("bad");
         nameInput.classList.add("nice"); nameInput.classList.remove("bad");
         document.body.appendChild(goodJob);
-        const table = document.querySelector("table tbody");
-        table.appendChild(StoreIntable(id, name, lastName));
     } else {
         nameInput.classList.add("bad"); lastNameInput.classList.remove("nice");
         lastNameInput.classList.add("bad"); nameInput.classList.remove("nice");
         document.body.appendChild(badJob);
     }   
 });
+document.getElementById("saveButton").addEventListener("click", ()=>{
+    if(nameInput.value !== "" && lastNameInput !== ""){
+        const userData = {
+            name : nameInput.value,
+            lastName: lastNameInput.value
+        }
+    fetch(url, {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json' // Indicate the data type of the body
+        },
+        body: JSON.stringify(userData) // Convert the JavaScript object to a JSON string
+    })
+    } else{
+        console.log("Mimimi")
+    }
+})
+async function getUsers() {
+    try {
+        const data = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const result = data.json()
+        return result;
+    } catch (error) {
+        console.error(`Error: ${error}`)
+    }
+
+}
+document.addEventListener("DOMContentLoaded", async e=>{
+    const data = await getUsers()
+    if (data !== null){
+        for (el of data){
+            const table = document.querySelector("table tbody");
+            table.appendChild(StoreIntable(el.id, el.name, el.last_name))
+        }
+    }
+})
