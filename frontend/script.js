@@ -21,10 +21,16 @@ badJob.querySelector("button").addEventListener("click", ()=> {
 function StoreIntable(id, name, last_name){
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${id}</td> <td>${name}</td> <td>${last_name}</td> <td><button>Eliminar</button></td>`;
-    tr.querySelector("button").addEventListener("click", async e=> {
+    const button = tr.querySelector("button")
+    button.addEventListener("click", async e=> {
         tr.remove();
         try {
-            
+            fetch(url+"/"+button.parentElement.parentElement.firstChild.textContent, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json' // Indicate the data type of the body
+                }
+            })
         } catch (error) {
             console.error(`Error: ${error}`)
         }
@@ -45,22 +51,30 @@ saveButton.addEventListener("click", ()=> {
         document.body.appendChild(badJob);
     }   
 });
-document.getElementById("saveButton").addEventListener("click", ()=>{
-    if(nameInput.value !== "" && lastNameInput !== ""){
-        const userData = {
-            name : nameInput.value,
-            lastName: lastNameInput.value
-        }
-    fetch(url, {
-        method: 'POST', 
-        headers: {
-          'Content-Type': 'application/json' // Indicate the data type of the body
-        },
-        body: JSON.stringify(userData) // Convert the JavaScript object to a JSON string
-    })
-    } else{
-        console.log("Mimimi")
+document.getElementById("saveButton").addEventListener("click", async ()=>{
+    if (name === "" || lastName === "") return;
+    const userData = {
+        name: name,
+        lastName: lastName
+    };
+  try {
+    const response = await fetch(url, {
+      method: 'POST', // Specify the method as POST
+      headers: {
+        'Content-Type': 'application/json' // Indicate the data type of the body
+      },
+      body: JSON.stringify(userData) // Convert the JavaScript object to a JSON string
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log('Success:', data);
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
 })
 async function getUsers() {
     try {
@@ -82,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async e=>{
     if (data !== null){
         for (el of data){
             const table = document.querySelector("table tbody");
-            table.appendChild(StoreIntable(el.id, el.name, el.last_name))
+            table.appendChild(StoreIntable(el.id, el.name, el.lastName))
         }
     }
 })
