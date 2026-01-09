@@ -22,11 +22,3 @@ async function addUser(userData) {
     console.error('Error:', error);
   }
 }
-
-// Example usage:
-const newUserData = {
-  name: "New User Name",
-  email: "user@example.com"
-  // JSON Server automatically adds an 'id' if not provided
-};
-
